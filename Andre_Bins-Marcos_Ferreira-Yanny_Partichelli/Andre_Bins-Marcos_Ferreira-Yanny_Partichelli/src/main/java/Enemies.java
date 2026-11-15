@@ -11,19 +11,19 @@ import javafx.scene.image.Image;
     abstract class Enemies extends BasicElement {
     private Image image;
     private String imageSrc;
-    private int vidas;
-    protected int ptsConcedidos;
+    private int lives;
+    protected int pointsAwarded;
 
     public Enemies(int px,int py){
         super(px,py);
-        setLargAlt(50, 40);
+        setSize(50, 40);
 
-        setSpeed(7 + Game.getInstance().getFase() / 7);
+        setSpeed(7 + Game.getInstance().getLevel() / 7);
     }
 
     protected void createImage() {
         try{
-            image =  new Image(imageSrc,getLargura(),getAltura(),true,true);
+            image =  new Image(imageSrc,getWidth(),getHeight(),true,true);
             
         }catch(Exception e){
             System.out.println(e.getMessage());
@@ -40,54 +40,54 @@ import javafx.scene.image.Image;
 
     @Override
     public void Update(long deltaTime){
-        if (jaColidiu()){
-            if (vidas > 1) {
-                vidas--;
-                setColidiu(false);
+        if (hasCollided()){
+            if (lives > 1) {
+                lives--;
+                setCollided(false);
             } else {
                 deactivate();
                 return;
             }
         }
         setPosX(getX() + getDirH() * getSpeed());
-        // Se chegou na borda da tela...
-        if (getX() >= getLMaxH() - getLargura() || getX() < getLMinH()){
-            fimDaTela();
+        // If it reached the screen edge...
+        if (getX() >= getLMaxH() - getWidth() || getX() < getLMinH()){
+            reachedScreenEdge();
             
-            // Posiciona inimigo na borda da tela para impedir que saia da tela
+            // Place the enemy at the screen edge to keep it from leaving the screen
             if (getX() < getLMinH()) {
                 setPosX(getLMinH());
-            } else if (getX() >= getLMaxH() - getLargura()){
-                setPosX(getLMaxH() - getLargura());
+            } else if (getX() >= getLMaxH() - getWidth()){
+                setPosX(getLMaxH() - getWidth());
             }   
         }
 
 
-        // if (getY() >= getLMaxV() - getAltura()) {
+        // if (getY() >= getLMaxV() - getHeight()) {
         //     Game.getInstance().loseLife();
         //     deactivate();
         // }
     }
 
-    public void mudaVelocidade() {
-        if(Game.getInstance().getFase()>=5){
+    public void changeSpeed() {
+        if(Game.getInstance().getLevel()>=5){
             setSpeed(Params.getInstance().nextInt(4)+2);
         }
     }
 
-    public void fimDaTela() {
-        // Inverte a direção
+    public void reachedScreenEdge() {
+        // Reverse direction
         setDirH(getDirH()*-1);
 
-        mudaVelocidade();
+        changeSpeed();
 
         setPosY(getY() + 45);
       
     }
 
     
-    public int getPointsConcedidos() {
-        return ptsConcedidos;
+    public int getPointsAwarded() {
+        return pointsAwarded;
     }
 
     @Override
@@ -96,38 +96,38 @@ import javafx.scene.image.Image;
     }
 
     @Override
-    public boolean testaColisao(Character outro){
-        if (outro instanceof Enemies || outro instanceof ShotEnemy){
+    public boolean testCollision(Character other){
+        if (other instanceof Enemies || other instanceof ShotEnemy){
             return false;
         }else{
-            boolean colidiu = super.testaColisao(outro);
-            if (colidiu && outro instanceof Canhao) {
+            boolean collided = super.testCollision(other);
+            if (collided && other instanceof Cannon) {
                 Game.getInstance().setFalseGameOver();
-                // diminuiVidas();
-            } else if (colidiu && outro instanceof Shot) {
-                BasicElement el = (Shot) outro;
+                // decreaseLives();
+            } else if (collided && other instanceof Shot) {
+                BasicElement el = (Shot) other;
                 el.deactivate();
             }
-            return colidiu;
+            return collided;
         }
     }
 
     @Override
     public void deactivate(){
-        Game.getInstance().incPontos(this.getPointsConcedidos());
+        Game.getInstance().addPoints(this.getPointsAwarded());
         super.deactivate();
     }
 
-    public void setVidas(int vidas) {
-        this.vidas = vidas;
+    public void setLives(int lives) {
+        this.lives = lives;
     }
 
-    public void diminuiVidas() {
-        this.vidas = vidas-1;
+    public void decreaseLives() {
+        this.lives = lives-1;
     }
 
-    public int getVidas() {
-        return vidas;
+    public int getLives() {
+        return lives;
     }
 
     public void setImage(String img) {

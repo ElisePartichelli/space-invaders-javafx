@@ -18,36 +18,36 @@ public class Shot extends BasicElement{
 
     
     @Override
-    public boolean testaColisao(Character outro){
-        // Não verifica colisão de um tiro com outro tiro
-        if (outro instanceof Shot){
+    public boolean testCollision(Character other){
+        // Do not check collision between two shots
+        if (other instanceof Shot){
             return false;
         }else{
-            return super.testaColisao(outro);
+            return super.testCollision(other);
         }
     }
 
     @Override
     public void Update(long deltaTime){
-        if (jaColidiu()){
+        if (hasCollided()){
             deactivate();
         }else{
             setPosY(getY() + getDirV() * getSpeed());
-            // Se chegou na parte superior da tela ...
+            // If it reached the top of the screen ...
             if (getY() <= getLMinV() || getY() > getLMaxV()){
-                // Desaparece
+                // Disappear
                 deactivate();
             }
         }
     }
 
     @Override
-    public int getAltura(){
+    public int getHeight(){
         return 16;
     }
 
     @Override
-    public int getLargura(){
+    public int getWidth(){
         return 8;
     }
 

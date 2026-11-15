@@ -26,18 +26,18 @@ import java.nio.file.Path;
  * Handles the game lifecycle and behavior
  * @author Bernardo Copstein and Rafael Copstein
  * 
- * @Mudancas André Menezes Bins 21200695-1
+ * @changes André Menezes Bins 21200695-1
  *           Marcos do Nascimento Ferreira 21200886-6
  *           Yanny Elise Partichelli 21200661-3 
  */
 public class Game {
     private static Game game = null;
-    private Canhao canhao;
+    private Cannon cannon;
     private List<Character> activeChars;
-    private int pontos;
-    public int aumentoVida;
-    private int vidas;
-    private int fase;
+    private int points;
+    public int extraLifeCount;
+    private int lives;
+    private int level;
     private boolean gameOver;
 
     
@@ -58,50 +58,50 @@ public class Game {
 
     public void eliminate(Character c){
         activeChars.remove(c);
-        faseAcabou();
+        checkLevelComplete();
     }
 
     public void Start() {
         activeChars = new LinkedList<>();
-        pontos = 0;
-        vidas = 3;
-        fase = 0;
-        aumentoVida=1;
+        points = 0;
+        lives = 3;
+        level = 0;
+        extraLifeCount=1;
         gameOver=false;
 
-        proxFase();
+        nextLevel();
     }
 
-    public void aumentarVida(){
-        if(pontos/(1000*aumentoVida)>=1){
-            vidas++;
-            aumentoVida++;
+    public void checkExtraLife(){
+        if(points/(1000*extraLifeCount)>=1){
+            lives++;
+            extraLifeCount++;
         }
     }
 
     public void Update(long currentTime, long deltaTime) {
         for(int i=0;i<activeChars.size();i++){
-            Character este = activeChars.get(i);
-            este.Update(deltaTime);
+            Character current = activeChars.get(i);
+            current.Update(deltaTime);
             for(int j =0; j<activeChars.size();j++){
-                Character outro = activeChars.get(j);
-                if ( este != outro){
-                    este.testaColisao(outro);
+                Character other = activeChars.get(j);
+                if ( current != other){
+                    current.testCollision(other);
                 }
-                aumentarVida();
+                checkExtraLife();
             }
         }
     }
 
     public void OnInput(KeyCode keyCode, boolean isPressed) {
-        canhao.OnInput(keyCode, isPressed);
+        cannon.OnInput(keyCode, isPressed);
     }
 
     public void Draw(GraphicsContext graphicsContext) {
 
             drawPoints(graphicsContext);
             drawLifes(graphicsContext);
-            drawFase(graphicsContext);
+            drawLevel(graphicsContext);
 
         for(Character c:activeChars){
             c.Draw(graphicsContext);
@@ -111,73 +111,73 @@ public class Game {
     private void drawPoints(GraphicsContext graphicsContext) {
         graphicsContext.setFont(new Font("Impact", 20));
         graphicsContext.setFill(Paint.valueOf("#FFD700"));
-        graphicsContext.fillText("Pontos: " + getPontos(), 10, 20);
+        graphicsContext.fillText("Points: " + getPoints(), 10, 20);
     }
 
     private void drawLifes(GraphicsContext graphicsContext) {
         graphicsContext.setFont(new Font("Impact", 20));
         graphicsContext.setFill(Paint.valueOf("#FFD700"));
-        graphicsContext.fillText("Vidas: " + getVidas(), 10, 40);
+        graphicsContext.fillText("Lives: " + getLives(), 10, 40);
     }
 
-    private void drawFase(GraphicsContext graphicsContext) {
+    private void drawLevel(GraphicsContext graphicsContext) {
         graphicsContext.setFont(new Font("Impact", 40));
         graphicsContext.setFill(Paint.valueOf("#FFD700"));
-        graphicsContext.fillText("Fase " + getFase(), Params.WINDOW_WIDTH/2 -80, perdeu()? 80: 40);
+        graphicsContext.fillText("Level " + getLevel(), Params.WINDOW_WIDTH/2 -80, hasLost()? 80: 40);
     }
 
-    private void faseAcabou() {
+    private void checkLevelComplete() {
         if (activeChars.stream().filter(c -> c instanceof Enemies).count() == 0) {
-            proxFase();
+            nextLevel();
         }
     }
 
-    public void proxFase() {
-        if (perdeu()) {
+    public void nextLevel() {
+        if (hasLost()) {
             return;
         }
 
-        fase++;
+        level++;
         
         activeChars.clear();
 
-        // Adiciona o canhao
-        if(fase<4){
-        canhao = new Canhao(400,550);
-        activeChars.add(canhao);
+        // Add the cannon
+        if(level<4){
+        cannon = new Cannon(400,550);
+        activeChars.add(cannon);
         }else{
-            canhao=new CanhaoJava(400, 550);
-            activeChars.add(canhao);
+            cannon=new JavaCannon(400, 550);
+            activeChars.add(cannon);
         }
 
-        criaInimigos();
+        createEnemies();
 
         for(Character c:activeChars){
             c.start();
         }
     }
 
-    public int getPontos() {
-        return pontos;
+    public int getPoints() {
+        return points;
     }
 
-    public void incPontos(int pontos) {
-        this.pontos += pontos;
+    public void addPoints(int points) {
+        this.points += points;
     }
 
-    public int getVidas() {
-        return vidas;
+    public int getLives() {
+        return lives;
     }
 
     public void loseLife() {
-        vidas--;
-        if (perdeu()) {
+        lives--;
+        if (hasLost()) {
             activeChars.clear();            
         }
     }
 
-    public boolean perdeu() {
-        if(vidas <= 0){
+    public boolean hasLost() {
+        if(lives <= 0){
             setFalseGameOver();
             return true;
         }
@@ -193,88 +193,88 @@ public class Game {
     }
 
 
-    public Integer getFase() {
-        return fase;
+    public Integer getLevel() {
+        return level;
     }
 
-    private void criaInimigos() {
-        if (getFase() == 1) fase1();
-        if (getFase() == 2) fase2();
-        if (getFase() == 3) fase3();
-        if (getFase() == 4) fase4();
-        if (fase > 4){
+    private void createEnemies() {
+        if (getLevel() == 1) level1();
+        if (getLevel() == 2) level2();
+        if (getLevel() == 3) level3();
+        if (getLevel() == 4) level4();
+        if (level > 4){
             int n=Params.getInstance().nextInt(2);
             if(n==0){
-                fase3();
+                level3();
             }else if(n==1){
-                fase4();
+                level4();
             }
         }
     }
 
-    private void fase1() {
-        activeChars.add(new Inimigo1(0, 50));
-        activeChars.add(new Inimigo1(200,50));
-        activeChars.add(new Inimigo1(400,50));
-        activeChars.add(new Inimigo1(600,50));
-        activeChars.add(new Inimigo1(100,50));
+    private void level1() {
+        activeChars.add(new Enemy1(0, 50));
+        activeChars.add(new Enemy1(200,50));
+        activeChars.add(new Enemy1(400,50));
+        activeChars.add(new Enemy1(600,50));
+        activeChars.add(new Enemy1(100,50));
     }
 
-    private void fase2() {
-        fase1();
-        activeChars.add(new Inimigo2(0,150));
-        activeChars.add(new Inimigo2(200,150));
-        activeChars.add(new Inimigo2(400,150));
-        activeChars.add(new Inimigo2(600,150));
-        activeChars.add(new Inimigo2(100,150));
+    private void level2() {
+        level1();
+        activeChars.add(new Enemy2(0,150));
+        activeChars.add(new Enemy2(200,150));
+        activeChars.add(new Enemy2(400,150));
+        activeChars.add(new Enemy2(600,150));
+        activeChars.add(new Enemy2(100,150));
     }
 
-    private void fase3() {
-        activeChars.add(new Inimigo2(0, 200));
-        activeChars.add(new Inimigo2(300, 200));
-        activeChars.add(new Inimigo2(200,200));
-        activeChars.add(new Inimigo1(400,200));
-        activeChars.add(new Inimigo1(600,200));
-        activeChars.add(new Inimigo1(100,200));
-        activeChars.add(new Inimigo3(5,50));
-        activeChars.add(new Inimigo3(200,50));
-        activeChars.add(new Inimigo3(400,50));
-        activeChars.add(new Inimigo3(100,50));
-        activeChars.add(new Inimigo3(300,50));
+    private void level3() {
+        activeChars.add(new Enemy2(0, 200));
+        activeChars.add(new Enemy2(300, 200));
+        activeChars.add(new Enemy2(200,200));
+        activeChars.add(new Enemy1(400,200));
+        activeChars.add(new Enemy1(600,200));
+        activeChars.add(new Enemy1(100,200));
+        activeChars.add(new Enemy3(5,50));
+        activeChars.add(new Enemy3(200,50));
+        activeChars.add(new Enemy3(400,50));
+        activeChars.add(new Enemy3(100,50));
+        activeChars.add(new Enemy3(300,50));
 
        
 
     }
 
 
-    private void fase4() {
-        activeChars.add(new Inimigo4(200,200));
-        activeChars.add(new Inimigo4(20,200));
-        activeChars.add(new Inimigo4(600,50));
-        activeChars.add(new Inimigo4(400,50));
-        activeChars.add(new Inimigo4(100,50));
-        activeChars.add(new Inimigo4(300,50));
+    private void level4() {
+        activeChars.add(new Enemy4(200,200));
+        activeChars.add(new Enemy4(20,200));
+        activeChars.add(new Enemy4(600,50));
+        activeChars.add(new Enemy4(400,50));
+        activeChars.add(new Enemy4(100,50));
+        activeChars.add(new Enemy4(300,50));
 
     }
 
-    public  static void escreveRank(String str){ 
-        ArrayList<String> list=leRank();
+    public  static void writeRank(String str){ 
+        ArrayList<String> list=readRank();
         int pos=0;
-        boolean achou=false;
+        boolean found=false;
 
         if(list.size()==0){
             list.add(str);
         }else{
-        while(pos<list.size() && achou==false){
+        while(pos<list.size() && found==false){
             int pts1= Integer.parseInt(str.substring(str.indexOf(": ")+2, str.length() ));
             int pts2= Integer.parseInt(list.get(pos).substring(list.get(pos).indexOf(": ")+2,list.get(pos).length() ));
             if(pts1>pts2){
                 list.add(pos,str);
-                achou=true;
+                found=true;
             }
             pos++;
         }
-        if(pos<10 && achou==false){
+        if(pos<10 && found==false){
             list.add(str);
         }
     }
@@ -283,34 +283,34 @@ public class Game {
         Path path = Paths.get(nameComplete);
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8))){
           for(int i=0;i<list.size();i++){
-                String linha = list.get(i);
-                writer.println(linha);
+                String line = list.get(i);
+                writer.println(line);
             }
         }catch (IOException x){
-          System.err.format("Erro de E/S: %s%n", x);
+          System.err.format("I/O error: %s%n", x);
       }
     }
 
-    public static ArrayList<String> leRank(){ 
-     ArrayList<String> listaRank= new ArrayList<>(10);
+    public static ArrayList<String> readRank(){ 
+     ArrayList<String> rankList= new ArrayList<>(10);
     
      String currDir = Paths.get("").toAbsolutePath().toString();
-     // Atenção: para windows use "\\"
+     // Note: on Windows use "\\"
      String nameComplete = currDir+"/"+"ranking.txt";
      Path path = Paths.get(nameComplete);
-     int cont=0;
+     int count=0;
      try (Scanner sc = new Scanner(Files.newBufferedReader(path, StandardCharsets.UTF_8))){
-        while (sc.hasNext() && cont<10){
-            String linha = sc.nextLine();
-           // System.out.println(linha);
-            listaRank.add(linha);
-            cont++;
+        while (sc.hasNext() && count<10){
+            String line = sc.nextLine();
+           // System.out.println(line);
+            rankList.add(line);
+            count++;
         }
      }catch (IOException x){
-         System.err.format("Erro de E/S: %s%n", x);
+         System.err.format("I/O error: %s%n", x);
      }
-     //System.out.println(listaRank);
-     return listaRank;
+     //System.out.println(rankList);
+     return rankList;
     }
 
 

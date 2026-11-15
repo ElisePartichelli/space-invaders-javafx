@@ -10,9 +10,9 @@ import javafx.scene.paint.Paint;
  *         Marcos do Nascimento Ferreira 21200886-6
  *         Yanny Elise Partichelli 21200661-3 
  */
-public class CanhaoJava extends Canhao {
+public class JavaCannon extends Cannon {
 
-    public CanhaoJava(int px,int py){
+    public JavaCannon(int px,int py){
         super(px,py);
         setSpeed(7);
         

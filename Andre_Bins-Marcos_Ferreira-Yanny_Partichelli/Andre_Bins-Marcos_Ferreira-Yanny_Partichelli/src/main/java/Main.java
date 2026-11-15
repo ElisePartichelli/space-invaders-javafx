@@ -32,16 +32,16 @@ import javafx.scene.text.Text;
 /**
  * Handles window initialization and primary game setup
  * @author Bernardo Copstein, Rafael Copstein
- * @Mudancas André Menezes Bins 21200695-1
+ * @changes André Menezes Bins 21200695-1
  *           Marcos do Nascimento Ferreira 21200886-6
  *           Yanny Elise Partichelli 21200661-3 
  */
 
 public class Main extends Application {
-    TextField nome;
+    TextField name;
     Stage stageMenu;
     Stage stageRanking;
-    Stage stageJogo;
+    Stage stageGame;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -49,16 +49,16 @@ public class Main extends Application {
 
     }
 
-    public void IniciaJogo(){
-         stageJogo=new Stage();
+    public void StartGame(){
+         stageGame=new Stage();
          // Initialize Window
-         stageJogo.setTitle(Params.WINDOW_TITLE);
-         stageJogo.setResizable(false);
+         stageGame.setTitle(Params.WINDOW_TITLE);
+         stageGame.setResizable(false);
  
  
          Group root = new Group();
          Scene scene = new Scene( root );
-         stageJogo.setScene( scene );
+         stageGame.setScene( scene );
  
          Canvas canvas = new Canvas(Params.WINDOW_WIDTH, Params.WINDOW_HEIGHT );
          root.getChildren().add( canvas );
@@ -97,9 +97,9 @@ public class Main extends Application {
                  lastNanoTime = currentNanoTime;
 
                  if(Game.getInstance().getGameOver()){
-                   Game.escreveRank(nome.getText()+": "+Game.getInstance().getPontos());
-                   IniciaRanking();
-                   stageJogo.close();
+                   Game.writeRank(name.getText()+": "+Game.getInstance().getPoints());
+                   StartRanking();
+                   stageGame.close();
                    stop(); 
                 }
              }
@@ -107,7 +107,7 @@ public class Main extends Application {
          }.start();
 
          // Show window
-         stageJogo.show();
+         stageGame.show();
         
     }
 
@@ -126,21 +126,21 @@ public class Main extends Application {
         scenetitle.setFont(Font.font("Impact", FontWeight.NORMAL, 50));
         grid.add(scenetitle, 0,1,2,1);
 
-        Label userName = new Label("Nome:");
+        Label userName = new Label("Name:");
         userName.setTextFill(Paint.valueOf("#FFD700"));
         userName.setFont(Font.font("Impact",FontWeight.NORMAL,20));
         grid.add(userName, 0, 2);
-         nome = new TextField();
-        grid.add(nome, 1, 2);
+         name = new TextField();
+        grid.add(name, 1, 2);
 
-        Button btnJogar = new Button("Jogar");
-        HBox hbBtnJogar = new HBox(10);
+        Button btnPlay = new Button("Play");
+        HBox hbBtnPlay = new HBox(10);
         
-        hbBtnJogar.setAlignment(Pos.CENTER_LEFT);
-        hbBtnJogar.getChildren().add(btnJogar);
-        grid.add(hbBtnJogar, 1, 3);
-        btnJogar.setOnAction(e->this.trataBotaoJogar(e));
-        btnJogar.setFont(Font.font("Impact", FontWeight.NORMAL, 17));
+        hbBtnPlay.setAlignment(Pos.CENTER_LEFT);
+        hbBtnPlay.getChildren().add(btnPlay);
+        grid.add(hbBtnPlay, 1, 3);
+        btnPlay.setOnAction(e->this.handlePlayButton(e));
+        btnPlay.setFont(Font.font("Impact", FontWeight.NORMAL, 17));
         
 
 
@@ -149,19 +149,19 @@ public class Main extends Application {
          hbBtnRanking.setAlignment(Pos.CENTER_LEFT);
          hbBtnRanking.getChildren().add(btnRanking);
          grid.add(hbBtnRanking, 1,4);
-         btnRanking.setOnAction(e->this.trataBotaoRanking(e));
+         btnRanking.setOnAction(e->this.handleRankingButton(e));
          btnRanking.setFont(Font.font("Impact", FontWeight.NORMAL, 17));
 
 
-        Button btnSair = new Button("Sair");
-        HBox hbBtnSair = new HBox(10);
-        hbBtnSair.setAlignment(Pos.CENTER_LEFT);
-        hbBtnSair.getChildren().add(btnSair);
-        grid.add(hbBtnSair, 1, 5);
-        btnSair.setOnAction(e->this.trataBotaoSair(e));
-         btnSair.setFont(Font.font("Impact", FontWeight.NORMAL, 17));
+        Button btnExit = new Button("Exit");
+        HBox hbBtnExit = new HBox(10);
+        hbBtnExit.setAlignment(Pos.CENTER_LEFT);
+        hbBtnExit.getChildren().add(btnExit);
+        grid.add(hbBtnExit, 1, 5);
+        btnExit.setOnAction(e->this.handleExitButton(e));
+         btnExit.setFont(Font.font("Impact", FontWeight.NORMAL, 17));
 
-        Image img = new Image("fundo.jpg",800,600,false,true);
+        Image img = new Image("background.jpg",800,600,false,true);
         BackgroundImage bImg = new BackgroundImage(img,
                                                    BackgroundRepeat.NO_REPEAT,
                                                    BackgroundRepeat.NO_REPEAT,
@@ -177,29 +177,29 @@ public class Main extends Application {
     }
 
     
-    public void trataBotaoJogar(ActionEvent e) {
+    public void handlePlayButton(ActionEvent e) {
         stageMenu.close();
-        IniciaJogo();
+        StartGame();
     }
 
-    public void trataBotaoRanking(ActionEvent e) {
+    public void handleRankingButton(ActionEvent e) {
         stageMenu.close();
-        IniciaRanking();
+        StartRanking();
     }
 
 
-    public void trataBotaoSair(ActionEvent e){
+    public void handleExitButton(ActionEvent e){
         stageMenu.close();
     }
 
-    public void trataBotaoMenu(ActionEvent e){
+    public void handleMenuButton(ActionEvent e){
         stageRanking.close();
         Menu();
     }
 
-    public void IniciaRanking(){
+    public void StartRanking(){
         stageRanking = new Stage();
-        ArrayList<String> lista=Game.leRank();
+        ArrayList<String> list=Game.readRank();
 
 
         
@@ -215,26 +215,26 @@ public class Main extends Application {
         scenetitle.setFont(Font.font("Impact", FontWeight.NORMAL, 40));
         grid.add(scenetitle, 0, 0, 2, 1);
 
-        int cont=2;
-        for(String st:lista){
+        int count=2;
+        for(String st:list){
             Text a = new Text(st);
             a.setFill(Paint.valueOf("#F8F8FF"));
             a.setFont(Font.font("Impact", FontWeight.NORMAL, 20));
 
-            grid.add(a,0,cont,2,1);
-            cont++;
+            grid.add(a,0,count,2,1);
+            count++;
         }
 
-        Button btnMenu = new Button("Voltar ao menu");
+        Button btnMenu = new Button("Back to menu");
         HBox hbBtnMenu = new HBox(20);
         hbBtnMenu.setAlignment(Pos.BASELINE_LEFT);
         hbBtnMenu.getChildren().add(btnMenu);
         grid.add(hbBtnMenu, 0, 14);
-        btnMenu.setOnAction(e->this.trataBotaoMenu(e));
+        btnMenu.setOnAction(e->this.handleMenuButton(e));
         btnMenu.setFont(Font.font("Impact", FontWeight.NORMAL, 17));
 
         
-        Image img = new Image("fundo.jpg",800,600,false,true);
+        Image img = new Image("background.jpg",800,600,false,true);
         BackgroundImage bImg = new BackgroundImage(img,
                                                    BackgroundRepeat.NO_REPEAT,
                                                    BackgroundRepeat.NO_REPEAT,

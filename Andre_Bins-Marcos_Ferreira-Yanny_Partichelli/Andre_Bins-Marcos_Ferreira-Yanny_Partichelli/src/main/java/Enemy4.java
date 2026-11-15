@@ -10,17 +10,17 @@ import javafx.scene.image.Image;
  *         Yanny Elise Partichelli 21200661-3 
  */
 
-public class Inimigo4 extends Enemies {
+public class Enemy4 extends Enemies {
     protected double RELOAD_TIME ; 
     protected double shot_timer = 0;
     
-    public Inimigo4(int px,int py){
+    public Enemy4(int px,int py){
         super(px,py);
-        setLargAlt(55, 55);
-        setVidas(3);
+        setSize(55, 55);
+        setLives(3);
         setImage("py.png");
-        ptsConcedidos = 100;
-        reloadAleatorio();
+        pointsAwarded = 100;
+        updateReloadTime();
     }
 
     @Override
@@ -36,12 +36,12 @@ public class Inimigo4 extends Enemies {
                 }
     }
 
-    public void reloadAleatorio() {
-        RELOAD_TIME = 1500000000  - (Game.getInstance().getFase() * 0.13) * 1000000000;
+    public void updateReloadTime() {
+        RELOAD_TIME = 1500000000  - (Game.getInstance().getLevel() * 0.13) * 1000000000;
 
         if (RELOAD_TIME < 300000000) {
             RELOAD_TIME = 300000000;
-            System.out.println("Velocidade de tiro minimo alcando. fase: " + Game.getInstance().getFase());
+            System.out.println("Minimum shot reload time reached. level: " + Game.getInstance().getLevel());
         }
     }
 }

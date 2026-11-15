@@ -7,13 +7,13 @@ import javafx.scene.canvas.GraphicsContext;
 public interface Character {
     int getX();
     int getY();
-    int getAltura();
-    int getLargura();
+    int getHeight();
+    int getWidth();
 
-    boolean testaColisao(Character c);
-    boolean jaColidiu();
-    void setColidiu();
-    void setColidiu(boolean colidiu);
+    boolean testCollision(Character c);
+    boolean hasCollided();
+    void setCollided();
+    void setCollided(boolean collided);
 
     void start();
     boolean isActive();

@@ -1,6 +1,6 @@
 # TrabalhoFinalPOO
-Trabalho desenvolvido na aula de Programação Orientada a Objetos 2022 
-O projeto é uma implementação do Space Inveders, jogo criado na década de 70.
+Project developed for the Object-Oriented Programming class, 2022 
+The project is an implementation of Space Invaders, a game created in the 1970s.
 
 - Yanny Elise Partichelli 
 - André Menezes Bins 

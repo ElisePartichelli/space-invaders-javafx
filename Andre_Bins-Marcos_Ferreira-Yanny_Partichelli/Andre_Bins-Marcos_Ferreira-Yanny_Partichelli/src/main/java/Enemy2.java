@@ -4,17 +4,15 @@ import javafx.scene.image.Image;
 
 /**
  * @author 
- *         André Menezes Bins 21200695-1
+ *          André Menezes Bins 21200695-1
  *         Marcos do Nascimento Ferreira 21200886-6
  *         Yanny Elise Partichelli 21200661-3 
  */
-public class Inimigo1 extends Enemies {
-    public Inimigo1(int px,int py){
+public class Enemy2 extends Enemies {
+    public Enemy2(int px,int py){
         super(px,py);
-        setLargAlt(65, 50);
-        setVidas(1);
-        setImage("Inimigo1.png");
-        ptsConcedidos = 10;
+        setLives(3);
+        setImage("Enemy2.png");
+        pointsAwarded = 50;
     }
-
 }

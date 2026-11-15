@@ -7,17 +7,17 @@ import javafx.scene.paint.Paint;
  * Represents the game Gun
  * @author Bernardo Copstein, Rafael Copstein
  */
-public class Canhao extends BasicElement implements KeyboardCtrl{
+public class Cannon extends BasicElement implements KeyboardCtrl{
     protected int RELOAD_TIME = 250000000; // Time is in nanoseconds
     protected int shot_timer = 0;
     protected Image image;
     
 
-    public Canhao(int px,int py){
+    public Cannon(int px,int py){
         super(px,py);
         setSpeed(7);
         try{
-            image =  new Image( "nave1.png",0,40,true,true );
+            image =  new Image( "ship1.png",0,40,true,true );
         }catch(Exception e){
             System.out.println(e.getMessage());
             System.exit(1);
@@ -32,9 +32,9 @@ public class Canhao extends BasicElement implements KeyboardCtrl{
 
     @Override
     public void Update(long deltaTime) {
-        if (jaColidiu()) {
+        if (hasCollided()) {
             Game.getInstance().loseLife();
-            setColidiu(false);
+            setCollided(false);
         }
 
         int newPos = getX() + getDirH() * getSpeed();
@@ -69,12 +69,12 @@ public class Canhao extends BasicElement implements KeyboardCtrl{
     }
 
     @Override
-    public int getAltura(){
+    public int getHeight(){
         return 80;
     }
 
     @Override
-    public int getLargura(){
+    public int getWidth(){
         return 32;
     }
 

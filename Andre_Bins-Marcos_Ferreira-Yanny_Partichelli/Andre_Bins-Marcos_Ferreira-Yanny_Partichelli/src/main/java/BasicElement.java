@@ -8,8 +8,8 @@ public abstract class BasicElement implements Character{
     int direction_horizontal = 0, direction_vertical = 0;
     int lminV = 0, lmaxV = Params.WINDOW_HEIGHT;
     int lminH = 0, lmaxH = Params.WINDOW_WIDTH;
-    int largura = 32, altura = 32;
-    boolean colidiu = false;
+    int width = 32, height = 32;
+    boolean collided = false;
     boolean active = true;
     int posX, posY;
     int speed = 2;
@@ -30,34 +30,34 @@ public abstract class BasicElement implements Character{
     }
 
     @Override
-    public int getAltura(){
-        return(altura);
+    public int getHeight(){
+        return(height);
     }
 
     @Override
-    public int getLargura(){
-        return(largura);
+    public int getWidth(){
+        return(width);
     }
 
     @Override
-    public boolean testaColisao(Character outro){
-        if (colidiu){
+    public boolean testCollision(Character other){
+        if (collided){
             return false;
         }
-        // Monta pontos
+        // Build corner points
         int p1x = this.getX();
         int p1y = this.getY();
-        int p2x = p1x+this.getLargura();
-        int p2y = p1y+this.getAltura();
+        int p2x = p1x+this.getWidth();
+        int p2y = p1y+this.getHeight();
 
-        int op1x = outro.getX();
-        int op1y = outro.getY();
-        int op2x = op1x+outro.getLargura();
-        int op2y = op1y+outro.getAltura();
+        int op1x = other.getX();
+        int op1y = other.getY();
+        int op2x = op1x+other.getWidth();
+        int op2y = op1y+other.getHeight();
 
-        // Verifica colisão
+        // Check collision
         if (p1x < op2x && p2x > op1x && p1y < op2y && p2y > op1y){
-            colidiu = true;
+            collided = true;
             return true;
         }
         return false;
@@ -99,9 +99,9 @@ public abstract class BasicElement implements Character{
         posY = p;
     }
 
-    public void setLargAlt(int l,int a){
-        largura = l;
-        altura = a;
+    public void setSize(int w,int h){
+        width = w;
+        height = h;
     }
 
     public void setDirH(int dirH){
@@ -132,18 +132,18 @@ public abstract class BasicElement implements Character{
     }
 
     @Override
-    public boolean jaColidiu(){
-        return(colidiu);
+    public boolean hasCollided(){
+        return(collided);
     }
 
     @Override
-    public void setColidiu(){
-        colidiu = true;
+    public void setCollided(){
+        collided = true;
     }
 
     @Override
-    public void setColidiu(boolean colidiu){
-        this.colidiu = colidiu;
+    public void setCollided(boolean collided){
+        this.collided = collided;
     }
 
     @Override

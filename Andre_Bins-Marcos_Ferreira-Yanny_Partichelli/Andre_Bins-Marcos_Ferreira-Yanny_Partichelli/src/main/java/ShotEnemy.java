@@ -24,12 +24,12 @@ public class ShotEnemy extends Shot{
     }
 
     @Override
-    public boolean testaColisao(Character outro){
-        // Não verifica colisão de um tiro com outro tiro
-        if (outro instanceof Shot || outro instanceof Enemies){
+    public boolean testCollision(Character other){
+        // Do not check collision between two shots
+        if (other instanceof Shot || other instanceof Enemies){
             return false;
         }else{
-            return super.testaColisao(outro);
+            return super.testCollision(other);
         }
     }
     
